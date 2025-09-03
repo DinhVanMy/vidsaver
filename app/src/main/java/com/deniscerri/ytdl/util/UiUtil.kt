@@ -60,8 +60,7 @@ import com.deniscerri.ytdl.database.models.Format
 import com.deniscerri.ytdl.database.models.GithubRelease
 import com.deniscerri.ytdl.database.models.HistoryItem
 import com.deniscerri.ytdl.database.models.TemplateShortcut
-import com.deniscerri.ytdl.database.models.YoutubePlayerClientItem
-import com.deniscerri.ytdl.database.models.YoutubePoTokenItem
+// Removed YouTube-specific imports for VidSaver
 import com.deniscerri.ytdl.database.repository.DownloadRepository
 import com.deniscerri.ytdl.database.viewmodel.CommandTemplateViewModel
 import com.deniscerri.ytdl.database.viewmodel.DownloadViewModel

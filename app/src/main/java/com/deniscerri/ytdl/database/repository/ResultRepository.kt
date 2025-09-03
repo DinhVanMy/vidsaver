@@ -17,7 +17,6 @@ import com.deniscerri.ytdl.util.Extensions.needsDataUpdating
 import com.deniscerri.ytdl.util.extractors.GoogleApiUtil
 import com.deniscerri.ytdl.util.extractors.newpipe.NewPipeUtil
 import com.deniscerri.ytdl.util.extractors.YTDLPUtil
-import com.deniscerri.ytdl.util.extractors.YoutubeApiUtil
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.runBlocking
@@ -31,7 +30,6 @@ class ResultRepository(private val resultDao: ResultDao, private val commandTemp
         return resultDao.getResultsWithPlaylistName(playlistName)
     }
 
-    private val youtubeApiUtil = YoutubeApiUtil(context)
     private val ytdlpUtil = YTDLPUtil(context, commandTemplateDao)
     private var newPipeUtil = NewPipeUtil(context)
     private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
@@ -60,11 +58,7 @@ class ResultRepository(private val resultDao: ResultDao, private val commandTemp
         val category = sharedPreferences.getString("recommendations_home", "")
         val items = when(category) {
             "newpipe" -> newPipeUtil.getTrending()
-            "yt_api" -> youtubeApiUtil.getTrending()
-            "yt_dlp_watch_later" -> ytdlpUtil.getYoutubeWatchLater()
-            "yt_dlp_recommendations" -> ytdlpUtil.getYoutubeRecommendations()
-            "yt_dlp_liked" -> ytdlpUtil.getYoutubeLikedVideos()
-            "yt_dlp_watch_history" -> ytdlpUtil.getYoutubeWatchHistory()
+            // Removed YouTube-specific options for VidSaver
             "custom" -> {
                 val customURL = sharedPreferences.getString("custom_home_recommendation_url", "")
                 if (customURL.isNullOrBlank()) arrayListOf()

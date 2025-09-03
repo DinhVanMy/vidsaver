@@ -17,8 +17,7 @@ import com.deniscerri.ytdl.database.models.ChapterItem
 import com.deniscerri.ytdl.database.models.DownloadItem
 import com.deniscerri.ytdl.database.models.Format
 import com.deniscerri.ytdl.database.models.ResultItem
-import com.deniscerri.ytdl.database.models.YoutubeGeneratePoTokenItem
-import com.deniscerri.ytdl.database.models.YoutubePlayerClientItem
+// Removed YouTube-specific imports for VidSaver
 import com.deniscerri.ytdl.database.viewmodel.DownloadViewModel
 import com.deniscerri.ytdl.database.viewmodel.ResultViewModel
 import com.deniscerri.ytdl.util.Extensions.getIDFromYoutubeURL
@@ -601,93 +600,8 @@ class YTDLPUtil(private val context: Context, private val commandTemplateDao: Co
     }
 
     private fun YoutubeDLRequest.setYoutubeExtractorArgs(url: String?) {
-        val extractorArgs = mutableListOf<String>()
-        val playerClients = mutableSetOf<String>()
-        val poTokens = mutableListOf<String>()
-
-        val configuredPlayerClientsRaw = sharedPreferences.getString("youtube_player_clients", "[]")!!.ifEmpty { "[]" }
-        kotlin.runCatching {
-            val configuredPlayerClients = Gson().fromJson(configuredPlayerClientsRaw, Array<YoutubePlayerClientItem>::class.java).toMutableList()
-
-            for (value in configuredPlayerClients) {
-                if (value.enabled) {
-                    if (!value.useOnlyPoToken) {
-                        playerClients.add(value.playerClient)
-                    }
-
-                    var canUsePoToken = true
-                    if (value.urlRegex.isNotEmpty() && url != null) {
-                        canUsePoToken = value.urlRegex.any { url.matches(it.toRegex()) }
-                    }
-
-                    if (canUsePoToken) {
-                        value.poTokens.forEach { pt ->
-                            poTokens.add("${value.playerClient}.${pt.context}+${pt.token}")
-                        }
-                    }
-                }
-            }
-        }
-
-        val dataSyncID = sharedPreferences.getString("youtube_data_sync_id", "")!!
-        if (dataSyncID.isNotBlank()) {
-            extractorArgs.add("player_skip=webpage,configs")
-            extractorArgs.add("data_sync_id=${dataSyncID}")
-        }
-
-        val generatedPoTokensRaw = sharedPreferences.getString("youtube_generated_po_tokens", "[]")!!.ifEmpty { "[]" }
-        kotlin.runCatching {
-            val generatedPoTokens = Gson().fromJson(generatedPoTokensRaw,Array<YoutubeGeneratePoTokenItem>::class.java).toMutableList()
-            if (generatedPoTokens.isNotEmpty()) {
-                for (value in generatedPoTokens) {
-                    if (value.enabled) {
-                        for (cl in value.clients) {
-                            playerClients.add(cl)
-                            for (pt in value.poTokens) {
-                                if (pt.token.isNotBlank()) {
-                                    poTokens.add("${cl}.${pt.context}+${pt.token}")
-                                }
-                            }
-                        }
-
-                        if (dataSyncID.isBlank() && value.useVisitorData) {
-                            extractorArgs.add("player_skip=webpage,configs")
-                            extractorArgs.add("visitor_data=${value.visitorData}")
-                        }
-
-                    }
-                }
-            }
-        }
-
-        if (playerClients.isNotEmpty()){
-            extractorArgs.add("player_client=${playerClients.joinToString(",")}")
-        }
-
-        if (poTokens.isNotEmpty()) {
-            extractorArgs.add("po_token=${poTokens.joinToString(",")}")
-        }
-
-        val useLanguageForMetadata = sharedPreferences.getBoolean("use_app_language_for_metadata", true)
-        if (useLanguageForMetadata) {
-            val lang = Locale.getDefault().language
-            val langTag = Locale.getDefault().toLanguageTag()
-            if (context.getStringArray(R.array.subtitle_langs).contains(lang)) {
-                extractorArgs.add("lang=$lang")
-            }else if (context.getStringArray(R.array.subtitle_langs).contains(langTag)) {
-                extractorArgs.add("lang=$langTag")
-            }
-        }
-
-        val otherArgs = sharedPreferences.getString("youtube_other_extractor_args", "")!!
-        if (otherArgs.isNotBlank()) {
-            extractorArgs.add(otherArgs)
-        }
-
-        val extArgs = extractorArgs.joinToString(";")
-        if (extractorArgs.isNotEmpty()) {
-            this.addOption("--extractor-args", "youtube:${extArgs}")
-        }
+        // VidSaver: Removed YouTube-specific extractor arguments
+        // This function is kept for compatibility but does nothing
     }
 
     private fun YoutubeDLRequest.addConfig(commandString: String) {
