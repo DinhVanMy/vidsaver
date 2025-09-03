@@ -530,15 +530,43 @@ object Extensions {
     }
 
     fun String.isYoutubeURL() : Boolean {
-        return Pattern.compile("((^(https?)://)?(www.)?(m.)?youtu(.be)?)|(^(https?)://(www.)?piped.video)").matcher(this).find()
+        // VidSaver: Always return false to block YouTube URLs
+        return false
     }
 
     fun String.isYoutubeChannelURL() : Boolean {
-        return Pattern.compile("((^(https?)://)?(www.)?(m.)?youtu(.be)?(be.com))/@[a-zA-Z]+").matcher(this).find()
+        // VidSaver: Always return false to block YouTube URLs
+        return false
     }
 
     fun String.isYoutubeWatchVideosURL() : Boolean {
-        return Pattern.compile("((^(https?)://)?(www.)?(m.)?youtu(.be)?(be.com))/watch_videos\\?video_ids=.*").matcher(this).find()
+        // VidSaver: Always return false to block YouTube URLs
+        return false
+    }
+
+    // VidSaver: Function to check if URL is actually YouTube (for blocking)
+    fun String.isActuallyYoutubeURL() : Boolean {
+        return Pattern.compile("((^(https?)://)?(www.)?(m.)?youtu(.be)?)|(youtube.com)|(youtu.be)").matcher(this).find()
+    }
+
+    // VidSaver: Function to check if URL is supported platform
+    fun String.isSupportedPlatform() : Boolean {
+        // Block YouTube URLs
+        if (isActuallyYoutubeURL()) return false
+        
+        // List of supported platforms
+        val supportedPlatforms = listOf(
+            "facebook.com", "fb.watch",
+            "instagram.com", 
+            "twitter.com", "x.com",
+            "tiktok.com",
+            "vimeo.com",
+            "dailymotion.com",
+            "reddit.com",
+            "twitch.tv"
+        )
+        
+        return supportedPlatforms.any { this.contains(it, ignoreCase = true) }
     }
 
     fun String.extractURL() : String {
